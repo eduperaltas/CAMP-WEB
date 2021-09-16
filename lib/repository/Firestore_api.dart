@@ -180,8 +180,12 @@ class FirestoreAPI {
 
   Stream<List<Publicacion>> get publicacionesData {
     if(filtro!=null)
-      return _db.collection(MURAL).where('Estado',isEqualTo: filtro).snapshots()
-          .map(_publicacionesDataFromSnapshot);
+      if(search==1)
+        return _db.collection(MURAL).where('Estado',isEqualTo: filtro).where("caseSearch", arrayContains: Txtabuscar).snapshots()
+            .map(_publicacionesDataFromSnapshot);
+      else
+        return _db.collection(MURAL).where('Estado',isEqualTo: filtro).snapshots()
+            .map(_publicacionesDataFromSnapshot);
     else
       return _db.collection(MURAL).snapshots()
           .map(_publicacionesDataFromSnapshot);

@@ -1,16 +1,12 @@
 import 'dart:html';
 
-import 'package:camp_web/Provider/AdminPage.dart';
-import 'package:camp_web/repository/Firestore_api.dart';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:image_whisperer/image_whisperer.dart';
-import 'package:provider/provider.dart';
-
 import 'SearchDrawer.dart';
 
 
@@ -34,12 +30,14 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: (){
-            _scaffoldKey.currentState.openEndDrawer();
-            // _settingModalBottomSheet();
-            // showDialog(
-            //   context: context,
-            //   builder: (BuildContext context) => SelectDialog(),
-            // );
+            showDialog(
+              context: context,
+              // false = user must tap button, true = tap outside dialog
+              builder: (BuildContext dialogContext) {
+                return SearchDrawer();
+              },
+            );
+            // _scaffoldKey.currentState.openEndDrawer();
           },
           child: Stack(
             children: [
@@ -500,8 +498,6 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
     //
     // FirestoreAPI().createCuponData(cupon);
   }
-
-
 
   Widget Taller(String img, String title, String subtitle){
     double ScreenWidth=MediaQuery.of(context).size.width;

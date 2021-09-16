@@ -1,7 +1,10 @@
+import 'package:camp_web/Provider/AdminInfo.dart';
+import 'package:camp_web/model/Publicacion.dart';
 import 'package:camp_web/repository/Firestore_api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -15,6 +18,69 @@ class SearchDrawer extends StatefulWidget {
 }
 
 class _SearchDrawerState extends State<SearchDrawer> {
+  _showDialog() async{
+    var screenSize = MediaQuery.of(context).size;
+
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context){
+        return new AlertDialog(
+          title: new Text('Selecciona una Publicación'),
+          content: new SingleChildScrollView(
+              child: new Material(
+                child:  Container(
+                    width: screenSize.width*0.6,
+                    height: screenSize.height*0.8,
+                    child: new MyDialogContent()),
+              ),
+            ),
+
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){_showDialog();});
+  }
+  @override
+  Widget build(BuildContext context) {
+    return new Container();
+  }
+}
+
+class TableRow extends DataTableSource {
+  List<DataRow> lstRowsData;
+  TableRow({this.lstRowsData});
+
+  @override
+  DataRow getRow(int index) {
+    return lstRowsData[index];
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => lstRowsData.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+
+class MyDialogContent extends StatefulWidget {
+  MyDialogContent({
+    Key key,
+  }): super(key: key);
+
+  @override
+  _MyDialogContentState createState() => new _MyDialogContentState();
+}
+
+class _MyDialogContentState extends State<MyDialogContent> {
   String TxtSearch;
   var tableRow;
 
@@ -33,7 +99,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
               borderSide: BorderSide( color: Colors.black26, ),
               borderRadius: BorderRadius.circular(50),
             ),
-            prefixIcon: Icon(FontAwesomeIcons.search,color: Colors.black26,),
+            prefixIcon: Icon(FontAwesomeIcons.search,color: Colors.black26,size: 14,),
             border: OutlineInputBorder(
               borderSide: BorderSide( color: Colors.black26,  ),
               borderRadius: BorderRadius.circular(50),
@@ -48,32 +114,72 @@ class _SearchDrawerState extends State<SearchDrawer> {
     );
   }
 
-  List<int> dataperPage(int i){
-    List <int> x=[];
-    int dec=i~/10;
-    for(int i=0;i<dec;i++){
-      x.add(10);
-    }
-    if(i%10!=0)
-      x.add(i%10);
-    return x;
+  void _add(Publicacion p){
+    final _PubsProvider =
+    Provider.of<AdmInfoProvider>(context, listen: true);
+    _PubsProvider.addToCards(p);
+  }
+
+  void _generateRowData(List<Publicacion> lst){
+    List<DataRow>lstDataRows=lst.map((e) {
+      return DataRow(
+          selected: false,
+          onSelectChanged: (bool selected) {
+            if (selected) {
+              _add(e);
+              print('row-selected: ${e.titulo}');
+            }
+          },
+          cells: [
+            DataCell(Container(
+                width: 150,
+                height: 60,
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      e.titulo,maxLines: 2,overflow: TextOverflow.ellipsis,)))),
+            DataCell(Row(
+              children: [
+                CircleAvatar(
+                    radius: 15,
+                    backgroundColor: Colors.white,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(e.Autorfoto)
+                        ),
+                      ),)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                  child: Container(
+                      width: 150,
+                      height: 60,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                            e.Autorname,maxLines: 2,overflow: TextOverflow.ellipsis),
+                      )),
+                ),
+              ],
+            )),
+            DataCell(Text(e.fecha.substring(0,10))),
+          ]);
+    }).toList();
+
+    tableRow=new TableRow(lstRowsData: lstDataRows);
   }
 
   Widget BuscaPublicaciones(){
-    List<int> y;
-    y=dataperPage(2);
-    print('object lista');
-    print(y.toString());
     return Container(
       width: MediaQuery.of(context).size.width*0.57,
-      // height: MediaQuery.of(context).size.height*0.7,
       child: StreamBuilder(
         stream: (TxtSearch != "" && TxtSearch != null)
-            ? FirestoreAPI(search: 1,Txtabuscar: TxtSearch).publicacionesDataRow
-            : FirestoreAPI().publicacionesDataRow,
+            ? FirestoreAPI(search: 1,Txtabuscar: TxtSearch,filtro: 'Aprobado').publicacionesData
+            : FirestoreAPI(filtro: 'Aprobado').publicacionesData,
         builder: (context, snapshot) {
-          List<DataRow> lstPubs=snapshot.data;
-          tableRow=new TableRow(lstRowsData: lstPubs);
+          List<Publicacion> lstPubs=snapshot.data;
 
           if (snapshot.connectionState == ConnectionState.waiting)
             return Container(
@@ -86,16 +192,17 @@ class _SearchDrawerState extends State<SearchDrawer> {
 
                 child: Text('Busqueda sin resultados'));
           }else {
-
+            _generateRowData(lstPubs);
             return PaginatedDataTable(
-                header: Text("Publicaciones"),
-                rowsPerPage: lstPubs.length,
-                columns: [
-                  DataColumn(label: Text('Titulo')),
-                  DataColumn(label: Text('Autor')),
-                  DataColumn(label: Text('Fecha')),
-                ],
-                source: tableRow,
+              header: Text("Publicaciones"),
+              rowsPerPage:  lstPubs.length >6 ? 6 : lstPubs.length,
+              columns: [
+                DataColumn(label: Text('Titulo')),
+                DataColumn(label: Text('Autor')),
+                DataColumn(label: Text('Fecha')),
+              ],
+              source: tableRow,
+              showCheckboxColumn: false,
 
             );
           }
@@ -106,42 +213,28 @@ class _SearchDrawerState extends State<SearchDrawer> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    
+  void initState(){
+    super.initState();
+  }
+
+  _getContent(){
     var screenSize = MediaQuery.of(context).size;
     return Container(
       color: Colors.white,
-      width: screenSize.width*0.6,
-      child: Drawer(
-        child:Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: FormBusqueda("Buscar...",screenSize.width*0.3,screenSize.height*0.08),
-            ),
-            BuscaPublicaciones()
-          ],
-        )
+      child: new Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: FormBusqueda("Buscar...",screenSize.width*0.3,screenSize.height*0.05),
+          ),
+          BuscaPublicaciones()
+        ],
       ),
     );
   }
-}
-
-class TableRow extends DataTableSource {
-  List<DataRow> lstRowsData;
-  TableRow({this.lstRowsData});
 
   @override
-  DataRow getRow(int index) {
-    return lstRowsData[index];
+  Widget build(BuildContext context) {
+    return _getContent();
   }
-
-  @override
-  bool get isRowCountApproximate => true;
-
-  @override
-  int get rowCount => lstRowsData.length;
-
-  @override
-  int get selectedRowCount => 0;
 }
