@@ -8,16 +8,18 @@ import 'package:provider/provider.dart';
 
 
 
-class SearchDrawer extends StatefulWidget {
-  const SearchDrawer({
+class SearchDialog extends StatefulWidget {
+  final int i;
+  const SearchDialog({
     Key key,
+    this.i
   }) : super(key: key);
 
   @override
-  _SearchDrawerState createState() => _SearchDrawerState();
+  _SearchDialogState createState() => _SearchDialogState();
 }
 
-class _SearchDrawerState extends State<SearchDrawer> {
+class _SearchDialogState extends State<SearchDialog> {
   _showDialog() async{
     var screenSize = MediaQuery.of(context).size;
 
@@ -31,7 +33,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
                 child:  Container(
                     width: screenSize.width*0.6,
                     height: screenSize.height*0.8,
-                    child: new MyDialogContent()),
+                    child: new MyDialogContent(i:this.widget.i)),
               ),
             ),
 
@@ -72,8 +74,10 @@ class TableRow extends DataTableSource {
 
 
 class MyDialogContent extends StatefulWidget {
+  final int i;
   MyDialogContent({
     Key key,
+    this.i
   }): super(key: key);
 
   @override
@@ -114,20 +118,18 @@ class _MyDialogContentState extends State<MyDialogContent> {
     );
   }
 
-  void _add(Publicacion p){
-    final _PubsProvider =
-    Provider.of<AdmInfoProvider>(context, listen: true);
-    _PubsProvider.addToCards(p);
-  }
 
   void _generateRowData(List<Publicacion> lst){
+    final _PubsProvider =
+    Provider.of<AdmInfoProvider>(context, listen: true);
+
     List<DataRow>lstDataRows=lst.map((e) {
       return DataRow(
           selected: false,
           onSelectChanged: (bool selected) {
             if (selected) {
-              _add(e);
               print('row-selected: ${e.titulo}');
+              _PubsProvider.updateCards(e,this.widget.i);
             }
           },
           cells: [

@@ -1,12 +1,15 @@
 import 'dart:html';
 
 
+import 'package:camp_web/Provider/AdminInfo.dart';
+import 'package:camp_web/model/Publicacion.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:image_whisperer/image_whisperer.dart';
+import 'package:provider/provider.dart';
 import 'SearchDrawer.dart';
 
 
@@ -21,9 +24,28 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
   File PubIMG1,PubIMG2,PubIMG3;
   BlobImage PubPathIMG1,PubPathIMG2,PubPathIMG3;
   String Titabuscar="";
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  String ejtit="Texto referencial para colocar el título de una noticia";
+  String ejtext="Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.";
 
-  Widget card1(String img,String txt){
+  void _showSelectDialog(int index){
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return SearchDialog(i:index);
+      },
+    );
+  }
+
+  Widget card1( int index){
+    final _PubsProvider =
+    Provider.of<AdmInfoProvider>(context, listen: true);
+
+    Publicacion p = _PubsProvider.cards1[index];
+
+    if(p==null)
+        p = new Publicacion(titulo: "El rincón del compliance"
+          , portada: "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FLogo%20-%20Camp.png?alt=media&token=edf2846d-cd3e-4113-8d24-889ba3a4eaee");
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MouseRegion(
@@ -32,12 +54,10 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
           onTap: (){
             showDialog(
               context: context,
-              // false = user must tap button, true = tap outside dialog
               builder: (BuildContext dialogContext) {
-                return SearchDrawer();
+                return SearchDialog(i:index);
               },
             );
-            // _scaffoldKey.currentState.openEndDrawer();
           },
           child: Stack(
             children: [
@@ -48,19 +68,21 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
                   shape: BoxShape.rectangle,
                   image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: AssetImage(img)
+                      image: NetworkImage(p.portada)
                   ),
                 ),
               ),
               Positioned(
-                top:MediaQuery.of(context).size.width*0.15,
+                top:MediaQuery.of(context).size.width*0.14,
                 left: MediaQuery.of(context).size.width*0.01,
                 child: Container(
-                  child: Text(txt, style: TextStyle(
+                  height: MediaQuery.of(context).size.height*0.07,
+                  width: MediaQuery.of(context).size.width*0.25,
+                  child: Text(p.titulo,maxLines: 2, style: TextStyle(
                     color: Colors.white,
                     fontSize: MediaQuery.of(context).size.width*0.015,
                     fontWeight: FontWeight.w400,
-                  ),),
+                  ),overflow: TextOverflow.ellipsis,),
                 ),),
             ],
           ),
@@ -181,128 +203,50 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
     );
   }
 
+  dynamic GETProviderData(int i){
+    final _PubsProvider = Provider.of<AdmInfoProvider>(context, listen: true);
+    if(_PubsProvider.cards1[i]==null)
+      return  new Publicacion(
+          titulo: "El rincón del compliance",
+          portada: "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FLogo%20-%20Camp.png?alt=media&token=edf2846d-cd3e-4113-8d24-889ba3a4eaee",
+          texto: "Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
+          Autorfoto: "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FIMG_Usuario_Predeterminado.png?alt=media&token=5aa86954-61cb-4b92-93a0-6de56f3389b5",
+          Autorname: "Nombre completo de Autor"
+      );
+    else
+      return _PubsProvider.cards1[i];
+  }
+
+
   Widget NotaDestacada(double W, double H,String lugar){
+    Publicacion p =GETProviderData(4);
     if(lugar=='der')
       return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: (){
-          // Navigator.push(context, PageTransition(child: MuralViewDetail(), type: PageTransitionType.rightToLeft));
+          _showSelectDialog(4);
         },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: W*0.38,
-              height: 315,
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                image: DecorationImage(
-                    fit: BoxFit.contain,
-                    image: AssetImage("assets/images/NOTA 1.png")
-                ),
-              ),
-            ),
-            Container(
-              width: W*0.38,
-              height: 315,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 30,
-                      ),
-                      Container(
-                        width: W*0.2,
-                        child: Text("Texto referencial para colocar el título de una noticia",style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: W*0.012,
-                            color: Colors.black
-                        ),),
-                      ),
-                      SizedBox(
-                        width: W*0.03,
-                      ),
-                      Container(
-                        width: W*0.03,
-                        child: Text("Fecha: Hora:",style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: W*0.008,
-                            color: Colors.black
-                        ),),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 450,
-                    margin: EdgeInsets.only(top: 30,left: 30,right: 30,bottom: 15),
-                    child: Center(
-                      child: Text("Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",style:TextStyle(
-                          fontSize: W*0.009,
-                          //fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          height: 1.5
-                      ),
-                        textAlign: TextAlign.justify,),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: W*0.027,
-                          height: H*0.15,
-                        ),
-                        CircleAvatar(
-                            radius: W*0.015,
-                            backgroundColor: Colors.white,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage("assets/images/APP - Pantalla Foto Perfil Referencial.png")
-                                ),
-                              ),)),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-                          child: Text("POR NOMBRE APELLIDO", style: TextStyle(
-                            color: Colors.black,
-                            fontSize: W*0.008,
-                            fontWeight: FontWeight.w400,
-                          ),),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-    if(lugar=='izq')
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: (){
-            // Navigator.push(context, PageTransition(child: MuralViewDetail(), type: PageTransitionType.rightToLeft));
-          },
+        child: Container(
+          width: W*0.8,
+          height: 315,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: W*0.38,
+                width: W*0.37,
+                height: 315,
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  image: DecorationImage(
+                      fit: BoxFit.contain,
+                      image: AssetImage("assets/images/NOTA 1.png")
+                  ),
+                ),
+              ),
+              Container(
+                width: W*0.37,
                 height: 315,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -310,52 +254,68 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: 30,
-                        ),
                         Container(
-                          width: W*0.2,
-                          child: Text("Texto referencial para colocar el título de una noticia",style: TextStyle(
+                          width: W*0.26,
+                          height: H*0.06,
+                          child: Text(p.titulo,
+                            style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: W*0.012,
                               color: Colors.black
-                          ),),
+                            ),
+                          ),
                         ),
-                        SizedBox(
-                          width: W*0.03,
-                        ),
+
                         Container(
-                          width: W*0.03,
-                          child: Text("Fecha: Hora:",style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: W*0.008,
-                              color: Colors.black
-                          ),),
+                          margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                          height: H*0.06,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: W*0.07,
+                                child: Text("Fecha: 15/10/2020",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: W*0.008,
+                                    color: Colors.black
+                                  ),
+                                    textAlign: TextAlign.left),
+                              ),
+                              Container(
+                                width: W*0.07,
+                                child: Text("Hora: 13:30 P.M",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: W*0.008,
+                                    color: Colors.black
+                                  ),
+                                    textAlign: TextAlign.left),
+                              ),
+                            ],
+                          ),
                         ),
+
                       ],
                     ),
                     Container(
-                      width: 450,
-                      margin: EdgeInsets.only(top: 30,left: 30,right: 30,bottom: 15),
+                      margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                      width: 550,
+                      height: 150,
                       child: Center(
-                        child: Text("Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",style:TextStyle(
+                        child: Text(p.texto,
+                          style:TextStyle(
                             fontSize: W*0.009,
-                            //fontWeight: FontWeight.w600,
                             color: Colors.black,
-                            height: 1.5
+                            height: 1.5,
                         ),
                           textAlign: TextAlign.justify,),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.fromLTRB(10, 10, 0, 0),                      
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: W*0.027,
-                            height: H*0.15,
-                          ),
                           CircleAvatar(
                               radius: W*0.015,
                               backgroundColor: Colors.white,
@@ -363,15 +323,14 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage("assets/images/APP - Pantalla Foto Perfil Referencial.png")
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(p.Autorfoto)
                                   ),
                                 ),)),
-                          SizedBox(
-                            width: 10,
-                          ),
+
                           Container(
-                            child: Text("POR NOMBRE APELLIDO", style: TextStyle(
+                            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            child: Text(p.Autorname, style: TextStyle(
                               color: Colors.black,
                               fontSize: W*0.008,
                               fontWeight: FontWeight.w400,
@@ -383,19 +342,135 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
                   ],
                 ),
               ),
-              Container(
-                width: W*0.38,
-                height: 315,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: AssetImage("assets/images/notas destacadas 2.png")
+            ],
+          ),
+        ),
+      ),
+    );
+    if(lugar=='izq')
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: (){
+            _showSelectDialog(5);
+          },
+          child: Container(
+            width: W*0.8,
+            height: 315,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: W*0.37,
+                  height: 315,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: W*0.26,
+                            height: H*0.06,
+                            child: Text(p.titulo,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: W*0.012,
+                                  color: Colors.black
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                            height: H*0.06,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: W*0.07,
+                                  child: Text("Fecha: 15/10/2020",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: W*0.008,
+                                          color: Colors.black
+                                      ),
+                                      textAlign: TextAlign.left),
+                                ),
+                                Container(
+                                  width: W*0.07,
+                                  child: Text("Hora: 13:30 P.M",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: W*0.008,
+                                          color: Colors.black
+                                      ),
+                                      textAlign: TextAlign.left),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                        width: 550,
+                        height: 150,
+                        child: Center(
+                          child: Text(p.texto,
+                            style:TextStyle(
+                              fontSize: W*0.009,
+                              color: Colors.black,
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.justify,),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                                radius: W*0.015,
+                                backgroundColor: Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        fit: BoxFit.fill,
+                                        image: NetworkImage(p.Autorfoto)
+                                    ),
+                                  ),)),
+
+                            Container(
+                              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              child: Text(p.Autorname, style: TextStyle(
+                                color: Colors.black,
+                                fontSize: W*0.008,
+                                fontWeight: FontWeight.w400,
+                              ),),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-
-            ],
+                Container(
+                  width: W*0.33,
+                  height: 315,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: AssetImage("assets/images/NOTA 1.png")
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -548,12 +623,9 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
   Widget build(BuildContext context) {
     double ScreenWidth =MediaQuery.of(context).size.width;
     double ScreenHeight =MediaQuery.of(context).size.height;
+
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      endDrawer: SearchDrawer(),
-      endDrawerEnableOpenDragGesture: false,
-      drawerEdgeDragWidth: ScreenWidth*0.5,
       body: SingleChildScrollView(
         child: Row(
           children: [
@@ -599,7 +671,7 @@ class _AdministradorInformacionPage extends State<AdministradorInformacionPage> 
                               ),
                               itemCount: 4,
                               itemBuilder: (BuildContext context, int index) {
-                                return card1( "assets/images/ricon del compliance 1.png","El rincón del compliance");
+                                return card1(index);
                               },
                             ),
                           ),

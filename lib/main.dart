@@ -8,6 +8,7 @@ import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'Provider/AdminInfo.dart';
 import 'UI/Widgets/AdminLateral.dart';
 import 'bloc/bloc_user.dart';
 
@@ -18,6 +19,7 @@ void main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => AdmPageProvider()),
+          ChangeNotifierProvider(create: (_) => AdmInfoProvider()),
         ],
         child: MyApp(),
       ),
