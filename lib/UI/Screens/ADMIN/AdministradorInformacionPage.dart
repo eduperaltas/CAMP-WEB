@@ -57,13 +57,7 @@ class _AdministradorInformacionPage
   Widget card1(int index) {
     final _PubsProvider = Provider.of<AdmInfoProvider>(context, listen: true);
 
-    Publicacion p = _PubsProvider.cards1[index];
-
-    if (p == null)
-      p = new Publicacion(
-          titulo: "El rincón del compliance",
-          portada:
-              "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FLogo%20-%20Camp.png?alt=media&token=edf2846d-cd3e-4113-8d24-889ba3a4eaee");
+    Publicacion p = GETProviderData(index);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -194,19 +188,19 @@ class _AdministradorInformacionPage
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Container(
-                        color: Colors.red,
-                        width: ScreenWidth * 0.25,
-                        height: 65,
-                        child: Center(
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 8, 5, 5),
+                      child: Container(
+                          width: ScreenWidth * 0.23,
+                          height: 43,
                           child: Text(
                             "${noticia.titulo}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w900,
-                                fontSize: ScreenWidth * 0.011,
+                                fontSize: ScreenWidth * 0.012,
                                 color: Colors.black),
-                          ),
-                        )),
+                          )),
+                    ),
                     Column(
                       children: [
                         Container(
@@ -232,20 +226,19 @@ class _AdministradorInformacionPage
                     ),
                   ],
                 ),
-                SizedBox(height: ScreenHeight * 0.03),
+                // SizedBox(height: ScreenHeight * 0.03),
                 Container(
-                  width: ScreenHeight * 0.6,
+                  width: ScreenWidth * 0.33,
+                  height: 170,
                   //margin: EdgeInsets.all(15),
-                  child: Center(
-                    child: Text(
-                      "${noticia.texto}",
-                      style: TextStyle(
-                          fontSize: ScreenWidth * 0.01,
-                          //fontWeight: FontWeight.w600,
-                          height: 1.5,
-                          color: Colors.black),
-                      textAlign: TextAlign.justify,
-                    ),
+                  child: Text(
+                    "${noticia.texto}",
+                    style: TextStyle(
+                        fontSize: ScreenWidth * 0.01,
+                        //fontWeight: FontWeight.w600,
+                        height: 1.5,
+                        color: Colors.black),
+                    textAlign: TextAlign.justify,
                   ),
                 )
               ],
@@ -255,7 +248,7 @@ class _AdministradorInformacionPage
   }
 
   Widget NotaDestacada(double W, double H, String lugar) {
-    List<Publicacion> nd = [GETProviderData(4), GETProviderData(5)];
+    List<Publicacion> nd = [GETProviderData(5), GETProviderData(6)];
     if (lugar == 'der')
       return MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -270,15 +263,19 @@ class _AdministradorInformacionPage
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: W * 0.35,
-                  height: 315,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: NetworkImage(nd[0].portada)),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      width: W * 0.35,
+                      height: 315,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        image: DecorationImage(
+                            fit: BoxFit.contain,
+                            image: NetworkImage(nd[0].portada)),
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),

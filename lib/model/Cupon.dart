@@ -26,7 +26,7 @@ class Cupon {
     @required this.fechafin,
     @required this.categoria,
     @required this.estado,
-    @required this.descarga,
+    this.descarga,
     this.direccion,
     this.urldirec,
     this.portada,

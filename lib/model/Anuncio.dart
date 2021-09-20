@@ -13,14 +13,14 @@ class Anuncio {
   //myFavoritePlaces
   //myPlaces
   Anuncio({
-   Key Key,
-   @required this.id,
-   @required this.Autorid,
-   @required this.titulo,
-   @required this.texto,
-   @required this.fechaInicio,
-   @required this.fechaFin,
-   @required this.estado,
-   this.portada,
-   });
+    Key Key,
+    this.id,
+    @required this.Autorid,
+    @required this.titulo,
+    @required this.texto,
+    @required this.fechaInicio,
+    @required this.fechaFin,
+    @required this.estado,
+    this.portada,
+  });
 }
