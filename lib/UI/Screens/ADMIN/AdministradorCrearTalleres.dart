@@ -1,14 +1,15 @@
 import 'dart:html';
+
 import 'package:camp_web/model/Evento.dart';
 import 'package:camp_web/repository/Firestore_api.dart';
 import 'package:camp_web/repository/firebase_auth_api.dart';
+import 'package:firebase/firebase.dart' as fb;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:image_whisperer/image_whisperer.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase/firebase.dart' as fb;
 
 
 class AdministradorCrearTalleresPage extends StatefulWidget {
