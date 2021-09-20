@@ -16,17 +16,17 @@ class Publicacion {
   //myFavoritePlaces
   //myPlaces
   Publicacion({
-   Key Key,
-   @required this.uid,
-   @required this.Autorname,
-   @required this.Autorfoto,
-   @required this.titulo,
-   @required this.texto,
-   @required this.fecha,
-   @required this.pubid,
-   this.portada,
-   this.img1,
-   this.img2,
-   @required this.estado,
-   });
+    Key Key,
+    this.uid,
+    this.Autorname,
+    this.Autorfoto,
+    this.titulo,
+    this.texto,
+    this.fecha,
+    this.pubid,
+    this.portada,
+    this.img1,
+    this.img2,
+    this.estado,
+  });
 }

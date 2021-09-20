@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:image_whisperer/image_whisperer.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/intl.dart';
 import 'SearchDrawer.dart';
 
 class AdministradorInformacionPage extends StatefulWidget {
@@ -20,9 +20,9 @@ class AdministradorInformacionPage extends StatefulWidget {
 
 class _AdministradorInformacionPage
     extends State<AdministradorInformacionPage> {
-  File PubIMG1, PubIMG2, PubIMG3;
-  BlobImage PubPathIMG1, PubPathIMG2, PubPathIMG3;
-  String Titabuscar = "";
+  File pubIMG1, pubIMG2, pubIMG3;
+  BlobImage pubPathIMG1, pubPathIMG2, pubPathIMG3;
+  String titabuscar = "";
   String ejtit = "Texto referencial para colocar el título de una noticia";
   String ejtext =
       "Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.";
@@ -34,6 +34,24 @@ class _AdministradorInformacionPage
         return SearchDialog(i: index);
       },
     );
+  }
+
+  dynamic GETProviderData(int i) {
+    final _PubsProvider = Provider.of<AdmInfoProvider>(context, listen: true);
+    if (_PubsProvider.cards1[i] == null)
+      return new Publicacion(
+        titulo: "El rincón del compliance",
+        portada:
+            "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FLogo%20-%20Camp.png?alt=media&token=edf2846d-cd3e-4113-8d24-889ba3a4eaee",
+        texto:
+            "Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
+        Autorfoto:
+            "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FIMG_Usuario_Predeterminado.png?alt=media&token=5aa86954-61cb-4b92-93a0-6de56f3389b5",
+        Autorname: "Nombre completo de Autor",
+        fecha: DateFormat('dd/MM/yyyy kk:mm').format(DateTime.now()),
+      );
+    else
+      return _PubsProvider.cards1[i];
   }
 
   Widget card1(int index) {
@@ -100,13 +118,13 @@ class _AdministradorInformacionPage
     BlobImage img;
     switch (n) {
       case 1:
-        img = PubPathIMG1;
+        img = pubPathIMG1;
         break;
       case 2:
-        img = PubPathIMG2;
+        img = pubPathIMG2;
         break;
       case 3:
-        img = PubPathIMG3;
+        img = pubPathIMG3;
         break;
     }
 
@@ -158,208 +176,87 @@ class _AdministradorInformacionPage
   }
 
   Widget Noticia(double ScreenWidth, double ScreenHeight) {
-    return Container(
-        height: 260,
-        width: ScreenHeight * 0.62,
-        decoration:
-            BoxDecoration(border: Border.all(width: 0.5, color: Colors.black)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+    Publicacion noticia = GETProviderData(4);
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          _showSelectDialog(4);
+        },
+        child: Container(
+            height: 260,
+            width: ScreenWidth * 0.37,
+            decoration: BoxDecoration(
+                border: Border.all(width: 0.5, color: Colors.black)),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                    width: 250,
-                    child: Center(
-                      child: Text(
-                        "Texto referencial para colocar el título de una noticia",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: ScreenWidth * 0.011,
-                            color: Colors.black),
-                      ),
-                    )),
-                SizedBox(
-                  width: ScreenWidth * 0.055,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                        color: Colors.red,
+                        width: ScreenWidth * 0.25,
+                        height: 65,
+                        child: Center(
+                          child: Text(
+                            "${noticia.titulo}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: ScreenWidth * 0.011,
+                                color: Colors.black),
+                          ),
+                        )),
+                    Column(
+                      children: [
+                        Container(
+                          width: ScreenWidth * 0.1,
+                          child: Text(
+                              "Fecha: ${noticia.fecha.substring(0, 10)}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ScreenWidth * 0.008,
+                                  color: Colors.black),
+                              textAlign: TextAlign.left),
+                        ),
+                        Container(
+                          width: ScreenWidth * 0.1,
+                          child: Text("Hora: ${noticia.fecha.substring(11)}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ScreenWidth * 0.008,
+                                  color: Colors.black),
+                              textAlign: TextAlign.left),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+                SizedBox(height: ScreenHeight * 0.03),
                 Container(
-                  width: 55,
-                  child: Text(
-                    "Fecha: Hora:",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: ScreenWidth * 0.01,
-                        color: Colors.black),
+                  width: ScreenHeight * 0.6,
+                  //margin: EdgeInsets.all(15),
+                  child: Center(
+                    child: Text(
+                      "${noticia.texto}",
+                      style: TextStyle(
+                          fontSize: ScreenWidth * 0.01,
+                          //fontWeight: FontWeight.w600,
+                          height: 1.5,
+                          color: Colors.black),
+                      textAlign: TextAlign.justify,
+                    ),
                   ),
-                ),
+                )
               ],
-            ),
-            SizedBox(height: ScreenHeight * 0.03),
-            Container(
-              width: ScreenHeight * 0.6,
-              //margin: EdgeInsets.all(15),
-              child: Center(
-                child: Text(
-                  "Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
-                  style: TextStyle(
-                      fontSize: ScreenWidth * 0.01,
-                      //fontWeight: FontWeight.w600,
-                      height: 1.5,
-                      color: Colors.black),
-                  textAlign: TextAlign.justify,
-                ),
-              ),
-            )
-          ],
-        ));
-  }
-
-  dynamic GETProviderData(int i) {
-    final _PubsProvider = Provider.of<AdmInfoProvider>(context, listen: true);
-    if (_PubsProvider.cards1[i] == null)
-      return new Publicacion(
-          titulo: "El rincón del compliance",
-          portada:
-              "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FLogo%20-%20Camp.png?alt=media&token=edf2846d-cd3e-4113-8d24-889ba3a4eaee",
-          texto:
-              "Es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.",
-          Autorfoto:
-              "https://firebasestorage.googleapis.com/v0/b/campproyect-69a08.appspot.com/o/Predeterminadas%2FIMG_Usuario_Predeterminado.png?alt=media&token=5aa86954-61cb-4b92-93a0-6de56f3389b5",
-          Autorname: "Nombre completo de Autor");
-    else
-      return _PubsProvider.cards1[i];
+            )),
+      ),
+    );
   }
 
   Widget NotaDestacada(double W, double H, String lugar) {
-    Publicacion p = GETProviderData(4);
+    List<Publicacion> nd = [GETProviderData(4), GETProviderData(5)];
     if (lugar == 'der')
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: () {
-            _showSelectDialog(4);
-          },
-          child: Container(
-            width: W * 0.8,
-            height: 315,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: W * 0.37,
-                  height: 315,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: AssetImage("assets/images/NOTA 1.png")),
-                  ),
-                ),
-                Container(
-                  width: W * 0.37,
-                  height: 315,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: W * 0.26,
-                            height: H * 0.06,
-                            child: Text(
-                              p.titulo,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: W * 0.012,
-                                  color: Colors.black),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
-                            height: H * 0.06,
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: W * 0.07,
-                                  child: Text("Fecha: 15/10/2020",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: W * 0.008,
-                                          color: Colors.black),
-                                      textAlign: TextAlign.left),
-                                ),
-                                Container(
-                                  width: W * 0.07,
-                                  child: Text("Hora: 13:30 P.M",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: W * 0.008,
-                                          color: Colors.black),
-                                      textAlign: TextAlign.left),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
-                        width: 550,
-                        height: 150,
-                        child: Center(
-                          child: Text(
-                            p.texto,
-                            style: TextStyle(
-                              fontSize: W * 0.009,
-                              color: Colors.black,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                                radius: W * 0.015,
-                                backgroundColor: Colors.white,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                        fit: BoxFit.fill,
-                                        image: NetworkImage(p.Autorfoto)),
-                                  ),
-                                )),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Text(
-                                p.Autorname,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: W * 0.008,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    if (lugar == 'izq')
       return MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
@@ -374,6 +271,137 @@ class _AdministradorInformacionPage
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
+                  width: W * 0.35,
+                  height: 315,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: NetworkImage(nd[0].portada)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  child: Container(
+                    width: W * 0.37,
+                    height: 315,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: W * 0.26,
+                              height: H * 0.06,
+                              child: Text(
+                                nd[0].titulo,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: W * 0.012,
+                                    color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                              height: H * 0.06,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: W * 0.07,
+                                    child: Text(
+                                        "Fecha: ${nd[0].fecha.substring(0, 10)}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: W * 0.008,
+                                            color: Colors.black),
+                                        textAlign: TextAlign.left),
+                                  ),
+                                  Container(
+                                    width: W * 0.07,
+                                    child: Text(
+                                        "Hora: ${nd[0].fecha.substring(11)}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: W * 0.008,
+                                            color: Colors.black),
+                                        textAlign: TextAlign.left),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                          width: 550,
+                          height: 150,
+                          child: Center(
+                            child: Text(
+                              nd[0].texto,
+                              style: TextStyle(
+                                fontSize: W * 0.009,
+                                color: Colors.black,
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                  radius: W * 0.015,
+                                  backgroundColor: Colors.white,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          fit: BoxFit.fill,
+                                          image: NetworkImage(nd[0].Autorfoto)),
+                                    ),
+                                  )),
+                              Container(
+                                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: Text(
+                                  nd[0].Autorname,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: W * 0.008,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    if (lugar == 'izq')
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () {
+            _showSelectDialog(6);
+          },
+          child: Container(
+            width: W * 0.8,
+            height: 315,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
                   width: W * 0.37,
                   height: 315,
                   child: Column(
@@ -386,7 +414,7 @@ class _AdministradorInformacionPage
                             width: W * 0.26,
                             height: H * 0.06,
                             child: Text(
-                              p.titulo,
+                              nd[1].titulo,
                               style: TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: W * 0.012,
@@ -400,7 +428,8 @@ class _AdministradorInformacionPage
                               children: [
                                 Container(
                                   width: W * 0.07,
-                                  child: Text("Fecha: 15/10/2020",
+                                  child: Text(
+                                      "Fecha: ${nd[1].fecha.substring(0, 10)}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: W * 0.008,
@@ -409,7 +438,8 @@ class _AdministradorInformacionPage
                                 ),
                                 Container(
                                   width: W * 0.07,
-                                  child: Text("Hora: 13:30 P.M",
+                                  child: Text(
+                                      "Hora: ${nd[1].fecha.substring(11)}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: W * 0.008,
@@ -427,7 +457,7 @@ class _AdministradorInformacionPage
                         height: 150,
                         child: Center(
                           child: Text(
-                            p.texto,
+                            nd[1].texto,
                             style: TextStyle(
                               fontSize: W * 0.009,
                               color: Colors.black,
@@ -450,13 +480,13 @@ class _AdministradorInformacionPage
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
                                         fit: BoxFit.fill,
-                                        image: NetworkImage(p.Autorfoto)),
+                                        image: NetworkImage(nd[1].Autorfoto)),
                                   ),
                                 )),
                             Container(
                               margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                               child: Text(
-                                p.Autorname,
+                                nd[1].Autorname,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: W * 0.008,
@@ -477,7 +507,7 @@ class _AdministradorInformacionPage
                     shape: BoxShape.rectangle,
                     image: DecorationImage(
                         fit: BoxFit.contain,
-                        image: AssetImage("assets/images/NOTA 1.png")),
+                        image: NetworkImage(nd[1].portada)),
                   ),
                 ),
               ],
@@ -564,16 +594,16 @@ class _AdministradorInformacionPage
     var tempImage = await ImagePickerWeb.getImage(outputType: ImageType.file);
     setState(() {
       if (n == 1) {
-        PubIMG1 = tempImage;
-        PubPathIMG1 = new BlobImage(PubIMG1, name: PubIMG1.name);
+        pubIMG1 = tempImage;
+        pubPathIMG1 = new BlobImage(pubIMG1, name: pubIMG1.name);
       }
       if (n == 2) {
-        PubIMG2 = tempImage;
-        PubPathIMG2 = new BlobImage(PubIMG2, name: PubIMG2.name);
+        pubIMG2 = tempImage;
+        pubPathIMG2 = new BlobImage(pubIMG2, name: pubIMG2.name);
       }
       if (n == 3) {
-        PubIMG3 = tempImage;
-        PubPathIMG3 = new BlobImage(PubIMG3, name: PubIMG3.name);
+        pubIMG3 = tempImage;
+        pubPathIMG3 = new BlobImage(pubIMG3, name: pubIMG3.name);
       }
     });
   }
