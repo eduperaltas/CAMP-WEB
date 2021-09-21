@@ -2,7 +2,18 @@ import 'package:camp_web/model/Publicacion.dart';
 import 'package:flutter/material.dart';
 
 class AdmInfoProvider with ChangeNotifier {
-  List<dynamic> cards1 = [null, null, null, null, null, null, null];
+  List<dynamic> cards1 = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ];
 
   List<dynamic> get Gcards1 {
     return cards1;

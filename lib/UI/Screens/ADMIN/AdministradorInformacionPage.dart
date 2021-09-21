@@ -247,6 +247,66 @@ class _AdministradorInformacionPage
     );
   }
 
+  String mesano(String fecha) {
+    List<String> meses = [
+      "ENE",
+      "FEB",
+      "MAR",
+      "ABR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AGO",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DIC"
+    ];
+    String mes = fecha.substring(3, 5);
+    String ano = fecha.substring(6, 10);
+    return meses[int.parse(mes) - 1] + "/" + ano;
+  }
+
+  Widget boxFecha(double W, double H, String fecha) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+      child: Container(
+        width: W * 0.06,
+        height: W * 0.06,
+        color: Color(0Xff2056a1),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  fecha.substring(0, 2),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: W * 0.03,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  mesano(fecha),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                    fontSize: W * 0.01,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget NotaDestacada(double W, double H, String lugar) {
     List<Publicacion> nd = [GETProviderData(5), GETProviderData(6)];
     if (lugar == 'der')
@@ -267,14 +327,15 @@ class _AdministradorInformacionPage
                   children: [
                     Container(
                       width: W * 0.35,
-                      height: 315,
+                      height: 270,
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
                         image: DecorationImage(
-                            fit: BoxFit.contain,
+                            fit: BoxFit.fill,
                             image: NetworkImage(nd[0].portada)),
                       ),
                     ),
+                    boxFecha(W, H, nd[0].fecha)
                   ],
                 ),
                 Padding(
@@ -400,7 +461,7 @@ class _AdministradorInformacionPage
               children: [
                 Container(
                   width: W * 0.37,
-                  height: 315,
+                  height: 310,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -497,15 +558,20 @@ class _AdministradorInformacionPage
                     ],
                   ),
                 ),
-                Container(
-                  width: W * 0.33,
-                  height: 315,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: NetworkImage(nd[1].portada)),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      width: W * 0.33,
+                      height: 270,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: NetworkImage(nd[1].portada)),
+                      ),
+                    ),
+                    boxFecha(W, H, nd[0].fecha)
+                  ],
                 ),
               ],
             ),
@@ -515,20 +581,20 @@ class _AdministradorInformacionPage
   }
 
   Widget Entrevista() {
+    Publicacion p = GETProviderData(7);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          // Navigator.push(context, PageTransition(child: MuralViewDetail(), type: PageTransitionType.rightToLeft));
+          _showSelectDialog(7);
         },
         child: Container(
           width: 960,
-          height: 700,
+          height: 500,
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             image: DecorationImage(
-                fit: BoxFit.fill,
-                image: AssetImage("assets/images/ENTREVISTA I.png")),
+                fit: BoxFit.fill, image: NetworkImage(p.portada)),
           ),
         ),
       ),
@@ -631,7 +697,7 @@ class _AdministradorInformacionPage
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          // Navigator.push(context, PageTransition(child: TalleresEventosVIewDetail(), type: PageTransitionType.rightToLeft));
+          _showSelectDialog(8);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,6 +739,21 @@ class _AdministradorInformacionPage
           ],
         ),
       ),
+    );
+  }
+
+  Widget dgvCurso() {
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, childAspectRatio: 0.73),
+      itemCount: 6,
+      itemBuilder: (BuildContext ctxt, int i) {
+        return CardCurso();
+      },
     );
   }
 
@@ -794,22 +875,7 @@ class _AdministradorInformacionPage
                       SizedBox(
                         height: 40,
                       ),
-                      Container(
-                        width: ScreenWidth,
-                        child: GridView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3, childAspectRatio: 0.73),
-                          itemCount: 6,
-                          itemBuilder: (BuildContext ctxt, int i) {
-                            return CardCurso();
-                          },
-                        ),
-                      ),
+                      Container(width: ScreenWidth, child: dgvCurso()),
                       SizedBox(
                         height: 40,
                       ),
